@@ -81,13 +81,22 @@ public class JournalEntryService {
      * This method deletes a journal entry from the database
      *
      * @param id       The ObjectId of the journal entry to delete
-     * @param userName
      */
     // Method to delete a journal entry by its ID
-    public void deleteById(ObjectId id, String userName){ // Takes an ObjectId parameter of the entry to delete
-        User user = userService.findByUsername(userName);
-        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-        userService.saveUser(user);
-        journalEntryRepo.deleteById(id); // Calls the repository's deleteById method to remove the document from MongoDB
+    @Transactional
+    public boolean deleteById(ObjectId id, String userName){ // Takes an ObjectId parameter of the entry to delete
+        boolean removed = false;
+        try {
+            User user = userService.findByUsername(userName);
+            removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if (removed){
+                userService.saveUser(user);
+                journalEntryRepo.deleteById(id); // Calls the repository's deleteById method to remove the document from MongoDB
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException("An error occured while deleting the entry.", e);
+        }
+        return removed;
     }
 }
