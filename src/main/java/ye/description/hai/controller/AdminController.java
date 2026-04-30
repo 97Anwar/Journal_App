@@ -2,10 +2,9 @@ package ye.description.hai.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ye.description.hai.entity.User;
 import ye.description.hai.service.UserService;
 
@@ -25,5 +24,11 @@ public class AdminController {
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/create-new-admin")
+    public ResponseEntity<?> createAdmin(@RequestBody User user){
+        userService.saveNewAdminUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
